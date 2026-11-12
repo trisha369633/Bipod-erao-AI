@@ -1,0 +1,226 @@
+#root {
+  width: 100%;
+  max-width: none;
+  border: 0;
+  text-align: left;
+}
+
+.home-page {
+  min-height: calc(100vh - 76px);
+  color: #17345b;
+  background:
+    radial-gradient(ellipse at 86% 27%, rgba(79, 195, 247, 0.13), transparent 34%),
+    linear-gradient(180deg, #f8fbff 0%, #edf5ff 100%);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.home-content {
+  width: min(1000px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(56px, 8vw, 92px) 0 76px;
+}
+
+.welcome {
+  max-width: 760px;
+  margin: 0 auto 46px;
+  text-align: center;
+}
+
+.welcome h1 {
+  margin: 0 0 14px;
+  color: #123b75;
+  font-size: clamp(1.5rem, 4vw, 2.85rem);
+  font-weight: 750;
+  line-height: 1.16;
+  letter-spacing: -0.045em;
+}
+
+.welcome__tagline {
+  max-width: 680px;
+  margin: 0 auto 13px;
+  color: #27669f;
+  font-size: clamp(1.05rem, 2vw, 1.25rem);
+  font-weight: 600;
+  line-height: 1.55;
+}
+
+.welcome__intro {
+  max-width: 680px;
+  margin: 0 auto;
+  color: #647a92;
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.check-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.check-card {
+  position: relative;
+  min-height: 222px;
+  padding: 26px 26px 25px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  overflow: hidden;
+  border: 1px solid #dce9f7;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 12px 30px rgba(27, 74, 124, 0.07);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.check-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 34px rgba(27, 74, 124, 0.11);
+}
+
+.check-card--message {
+  border-top: 3px solid #2e91dc;
+}
+
+.check-card--link {
+  border-top: 3px solid #3b78c4;
+}
+
+.check-card__icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: #e8f4ff;
+  color: #1877c6;
+}
+
+.check-card--link .check-card__icon {
+  background: #eaf1fc;
+  color: #3a70b5;
+}
+
+.check-card__icon svg {
+  width: 29px;
+  height: 29px;
+}
+
+.check-card__body {
+  position: relative;
+  z-index: 1;
+}
+
+.check-card__body h2 {
+  margin: 1px 0 8px;
+  color: #193e6b;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.check-card__body p {
+  max-width: 360px;
+  margin: 0 0 19px;
+  color: #687d94;
+  font-size: 0.88rem;
+  line-height: 1.65;
+}
+
+.check-card__button {
+  min-height: 40px;
+  padding: 0 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #1e81d0;
+  color: #fff;
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.check-card--link .check-card__button {
+  background: #346eae;
+}
+
+.check-card__button:hover {
+  transform: translateY(-1px);
+  background: #126eb9;
+}
+
+.check-card__button span {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.check-card__number {
+  position: absolute;
+  right: 19px;
+  bottom: 11px;
+  color: #eaf2fa;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.06em;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .home-content {
+    width: calc(100% - 36px);
+  }
+
+  .home-content {
+    padding-top: 48px;
+    padding-bottom: 54px;
+  }
+
+  .welcome {
+    margin-bottom: 32px;
+  }
+
+  .welcome__intro {
+    font-size: 0.91rem;
+  }
+
+  .check-options {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .check-card {
+    min-height: 0;
+    padding: 21px 19px;
+    gap: 14px;
+  }
+
+  .check-card__icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+    border-radius: 12px;
+  }
+
+  .check-card__icon svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}

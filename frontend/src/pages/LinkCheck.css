@@ -1,0 +1,28 @@
+.analysis-panel__url-input {
+  width: 100%;
+  min-height: 52px;
+  padding: 11px 2px 10px;
+  border: 0;
+  border-bottom: 2px solid #3b91d2;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: #17345b;
+  font: inherit;
+  font-size: 0.96rem;
+  line-height: 1.5;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.analysis-panel__url-input::placeholder {
+  color: #91a1b3;
+}
+
+.analysis-panel__url-input:focus {
+  border-color: #176fbb;
+  box-shadow: 0 2px 0 #176fbb;
+}
+
+.analysis-panel__url-input:disabled {
+  opacity: 0.7;
+}

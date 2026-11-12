@@ -1,0 +1,86 @@
+.url-classification {
+  margin-top: 20px;
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid #dce9f7;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #536982;
+}
+
+.url-classification h2 {
+  margin: 0 0 16px;
+  color: #123b75;
+  font-size: 1.15rem;
+}
+
+.url-classification__summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.url-classification__summary > div,
+.url-classification__confidence {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 0.84rem;
+}
+
+.url-classification__summary strong {
+  color: #287ecb;
+  font-size: 1.05rem;
+}
+
+.url-classification__risk {
+  align-items: flex-end;
+}
+
+.url-classification__risk--high strong {
+  color: #bd4d4d;
+}
+
+.url-classification__risk--low strong {
+  color: #28714b;
+}
+
+.url-classification__message,
+.url-classification__note,
+.url-classification__url {
+  color: #60768e;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.url-classification__message {
+  margin: 14px 0;
+}
+
+.url-classification__confidence {
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 320px;
+}
+
+.url-classification__confidence strong {
+  color: #145da8;
+}
+
+.url-classification__note {
+  margin: 6px 0 18px;
+  color: #7b8da2;
+  font-size: 0.78rem;
+}
+
+.url-classification h3 {
+  margin: 0 0 6px;
+  color: #193e6b;
+  font-size: 0.9rem;
+}
+
+.url-classification__url {
+  margin: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}

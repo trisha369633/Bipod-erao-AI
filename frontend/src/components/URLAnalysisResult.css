@@ -1,0 +1,83 @@
+.url-analysis {
+  margin-top: 20px;
+  padding: clamp(18px, 4vw, 26px);
+  border: 1px solid #dce9f7;
+  border-radius: 14px;
+  background: #f8fbff;
+  color: #536982;
+}
+
+.url-analysis > h2 {
+  margin: 0 0 14px;
+  color: #123b75;
+  font-size: 1.15rem;
+}
+
+.url-analysis__item {
+  padding: 16px;
+  border: 1px solid #e6eef7;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.url-analysis__item + .url-analysis__item {
+  margin-top: 12px;
+}
+
+.url-analysis__item h3 {
+  margin: 15px 0 6px;
+  color: #193e6b;
+  font-size: 0.9rem;
+}
+
+.url-analysis__item h3:first-child {
+  margin-top: 0;
+}
+
+.url-analysis__item p,
+.url-analysis__item li,
+.url-analysis__context,
+.url-analysis__note {
+  color: #60768e;
+  font-size: 0.84rem;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+
+.url-analysis__item ul {
+  margin: 0;
+  padding-left: 19px;
+}
+
+.url-analysis__url {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.url-analysis__status {
+  margin-top: 9px;
+}
+
+.url-analysis__status--suspicious {
+  color: #ad4848 !important;
+}
+
+.url-analysis__status--no_obvious_threat {
+  color: #28714b !important;
+}
+
+.url-analysis__status--unknown {
+  color: #8a641c !important;
+}
+
+.url-analysis__context {
+  margin: 12px 0 0;
+  padding: 12px;
+  border-left: 3px solid #d29a3d;
+  border-radius: 0 8px 8px 0;
+  background: #fff9ec;
+}
+
+.url-analysis__note {
+  margin: 12px 0 0;
+  color: #7b8da2;
+}

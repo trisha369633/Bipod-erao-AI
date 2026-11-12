@@ -1,0 +1,116 @@
+.analysis-page {
+  min-height: calc(100vh - 76px);
+  color: #17345b;
+  background:
+    radial-gradient(ellipse at 86% 27%, rgba(79, 195, 247, 0.13), transparent 34%),
+    linear-gradient(180deg, #f8fbff 0%, #edf5ff 100%);
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.analysis-page__content {
+  width: min(820px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: clamp(44px, 7vw, 74px) 0 70px;
+}
+
+.analysis-panel {
+  padding: clamp(22px, 5vw, 40px);
+  border: 1px solid #dce9f7;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 12px 30px rgba(27, 74, 124, 0.07);
+}
+
+.analysis-panel__heading {
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.analysis-panel__marker {
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #e8f4ff;
+  color: #1877c6;
+  font-size: 0.85rem;
+  font-weight: 800;
+}
+
+.analysis-panel__heading h1 {
+  margin: 0;
+  color: #123b75;
+  font-size: clamp(1.7rem, 4vw, 2.3rem);
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+}
+
+.analysis-panel__instruction {
+  display: block;
+  margin-bottom: 10px;
+  color: #193e6b;
+  font-size: 0.98rem;
+  font-weight: 650;
+}
+
+.analysis-panel__error {
+  margin-top: 11px;
+  color: #ad4848;
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.analysis-panel__submit {
+  min-height: 44px;
+  margin-top: 22px;
+  padding: 0 17px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  border: 0;
+  border-radius: 9px;
+  background: #1e81d0;
+  color: #fff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, background 160ms ease;
+}
+
+.analysis-panel__submit:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: #126eb9;
+}
+
+.analysis-panel__submit:disabled {
+  cursor: wait;
+  opacity: 0.75;
+}
+
+.analysis-panel__submit span {
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+@media (max-width: 600px) {
+  .analysis-page__content {
+    width: calc(100% - 32px);
+    padding-top: 32px;
+    padding-bottom: 48px;
+  }
+
+  .analysis-panel {
+    padding: 22px 18px;
+  }
+
+  .analysis-panel__heading {
+    margin-bottom: 25px;
+  }
+}

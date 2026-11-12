@@ -1,0 +1,17 @@
+# Environment variables
+backend/.env
+.env
+
+# Large datasets and CSV/Parquet files
+backend/dataset/url/prepared_mendeley/
+backend/*.csv
+backend/*.parquet
+*.csv
+*.parquet
+
+# Python & Node modules
+backend/venv/
+backend/__pycache__/
+frontend/node_modules/
+frontend/dist/
+.env
