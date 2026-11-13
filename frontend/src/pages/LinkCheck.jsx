@@ -1,6 +1,5 @@
 import { useState } from "react";
 import DualDecisionResult from "../components/DualDecisionResult";
-import URLClassificationResult from "../components/URLClassificationResult";
 import { analyzeDualUrl } from "../services/api";
 import "./AnalysisForm.css";
 import "./LinkCheck.css";
@@ -11,37 +10,38 @@ const translations = {
     instruction: "Enter the suspicious link",
     placeholder: "Paste the suspicious URL here...",
     button: "Check Link",
+    retry: "Try again",
     loading: "Analyzing link...",
     emptyError: "Enter a URL to analyze.",
     invalidUrlError: "Enter a valid HTTP or HTTPS URL.",
-    serviceError:
-      "The analysis service is unavailable. Please try again later.",
-    invalidResult:
-      "The analysis service returned an invalid result. Please try again later.",
-    requestError: "The link could not be analyzed. Please try again later.",
+    unavailable: "Analysis is temporarily unavailable. Please try again.",
+    requestError: "The link could not be analyzed. Please try again.",
   },
   bn: {
     title: "লিংক চেক",
     instruction: "সন্দেহজনক লিংকটি লিখুন",
     placeholder: "সন্দেহজনক লিংকটি এখানে পেস্ট করুন...",
     button: "লিংক পরীক্ষা করুন",
+    retry: "আবার চেষ্টা করুন",
     loading: "লিংক বিশ্লেষণ করা হচ্ছে...",
     emptyError: "বিশ্লেষণের জন্য একটি URL লিখুন।",
     invalidUrlError: "একটি সঠিক HTTP বা HTTPS URL লিখুন।",
-    serviceError:
-      "বিশ্লেষণ পরিষেবা এখন উপলভ্য নয়। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
-    invalidResult:
-      "বিশ্লেষণ পরিষেবা থেকে সঠিক ফলাফল পাওয়া যায়নি। পরে আবার চেষ্টা করুন।",
-    requestError:
-      "লিংকটি বিশ্লেষণ করা যায়নি। অনুগ্রহ করে পরে আবার চেষ্টা করুন।",
+    unavailable:
+      "বিশ্লেষণ সাময়িকভাবে উপলভ্য নয়। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    requestError: "লিংকটি বিশ্লেষণ করা যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।",
   },
 };
 
 function getErrorCode(error) {
-  if (error.code === "INVALID_ANALYSIS_INPUT") return "invalidUrlError";
-  if (error.code === "INVALID_URL") return "invalidUrlError";
-  if (error.message === "ANALYSIS_SERVICE_UNAVAILABLE") return "serviceError";
-  if (error.message === "ANALYSIS_RESPONSE_INVALID") return "invalidResult";
+  if (error.code === "INVALID_ANALYSIS_INPUT" || error.code === "INVALID_URL") {
+    return "invalidUrlError";
+  }
+  if (
+    error.code === "GEMINI_UNAVAILABLE" ||
+    error.message === "ANALYSIS_SERVICE_UNAVAILABLE"
+  ) {
+    return "unavailable";
+  }
   return "requestError";
 }
 
@@ -50,12 +50,13 @@ export default function LinkCheck({ isBangla }) {
   const [url, setUrl] = useState("");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [error, setError] = useState("");
-  const [result, setResult] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
 
   async function handleSubmit(event) {
     event.preventDefault();
+    if (isAnalyzing) return;
     setError("");
-    setResult(null);
+    setAnalysis(null);
 
     if (!url.trim()) {
       setError("emptyError");
@@ -64,9 +65,7 @@ export default function LinkCheck({ isBangla }) {
 
     setIsAnalyzing(true);
     try {
-      setResult(
-        await analyzeDualUrl(url.trim(), isBangla ? "bn" : "en"),
-      );
+      setAnalysis(await analyzeDualUrl(url.trim(), isBangla ? "bn" : "en"));
     } catch (analysisError) {
       setError(getErrorCode(analysisError));
     } finally {
@@ -101,11 +100,11 @@ export default function LinkCheck({ isBangla }) {
               onChange={(event) => {
                 setUrl(event.target.value);
                 setError("");
-                setResult(null);
+                setAnalysis(null);
               }}
               placeholder={text.placeholder}
               disabled={isAnalyzing}
-              aria-invalid={error === "emptyError"}
+              aria-invalid={["emptyError", "invalidUrlError"].includes(error)}
               aria-describedby={error ? "link-error" : undefined}
             />
             {error && (
@@ -118,19 +117,17 @@ export default function LinkCheck({ isBangla }) {
               type="submit"
               disabled={isAnalyzing}
             >
-              {isAnalyzing ? text.loading : text.button}
+              {isAnalyzing
+                ? text.loading
+                : error === "unavailable"
+                  ? text.retry
+                  : text.button}
               {!isAnalyzing && <span aria-hidden="true">→</span>}
             </button>
           </form>
 
-          {result && (
-            <>
-              <URLClassificationResult
-                isBangla={isBangla}
-                result={result.ml_details}
-              />
-              <DualDecisionResult analysis={result} isBangla={isBangla} />
-            </>
+          {analysis && (
+            <DualDecisionResult analysis={analysis} isBangla={isBangla} />
           )}
         </section>
       </div>

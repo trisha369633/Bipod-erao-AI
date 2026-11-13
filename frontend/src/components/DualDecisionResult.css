@@ -1,100 +1,44 @@
 .dual-decision {
   margin-top: 20px;
-  display: grid;
-  gap: 14px;
-  color: #536982;
-}
-
-.dual-decision__system,
-.dual-decision__final {
-  padding: clamp(18px, 4vw, 26px);
-  border: 1px solid #dce9f7;
-  border-radius: 14px;
-  background: #f8fbff;
-}
-
-.dual-decision__system h2,
-.dual-decision__final h2 {
-  margin: 0 0 12px;
-  color: #123b75;
-  font-size: 1.08rem;
-}
-
-.dual-decision__system p,
-.dual-decision__system li,
-.dual-decision__final p {
-  color: #60768e;
-  font-size: 0.84rem;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
-}
-
-.dual-decision__confidence {
-  margin: 10px 0;
-  display: grid;
-  gap: 3px;
-}
-
-.dual-decision__confidence strong {
-  color: #145da8;
-}
-
-.dual-decision__confidence span,
-.dual-decision__policy {
-  color: #7b8da2 !important;
-  font-size: 0.78rem !important;
-}
-
-.dual-decision__system h4,
-.dual-decision__final h3 {
-  margin: 13px 0 5px;
-  color: #193e6b;
-  font-size: 0.88rem;
-}
-
-.dual-decision__system ul {
-  margin: 0;
-  padding-left: 19px;
-}
-
-.dual-decision__final {
   padding: clamp(22px, 5vw, 32px);
-  border-width: 2px;
-  border-color: #85b8df;
+  border: 2px solid #85b8df;
+  border-radius: 14px;
   background: #f0f7fd;
   box-shadow: 0 10px 26px rgba(27, 74, 124, 0.08);
+  color: #536982;
+  text-align: center;
 }
 
-.dual-decision__final--agreement {
+.dual-decision--phishing {
+  border-color: #d78a8a;
+  background: #fff5f4;
+}
+
+.dual-decision--legitimate {
   border-color: #72b58c;
   background: #f1faf4;
 }
 
-.dual-decision__final--review_required {
-  border-color: #d29a3d;
-  background: #fff9ec;
-}
-
-.dual-decision__final--ml_fallback {
-  border-color: #85b8df;
-}
-
-.dual-decision__status {
-  margin: 0;
-  font-weight: 700;
+.dual-decision h2 {
+  margin: 0 0 10px;
+  color: #123b75;
+  font-size: 1.05rem;
 }
 
 .dual-decision__prediction {
-  margin: 4px 0 10px;
-  color: #123b75 !important;
-  font-size: clamp(1.35rem, 4vw, 1.75rem) !important;
+  margin: 0;
+  color: #a93636;
+  font-size: clamp(1.6rem, 5vw, 2rem);
   font-weight: 800;
 }
 
-.dual-decision__final--review_required .dual-decision__prediction {
-  color: #956715 !important;
+.dual-decision--legitimate .dual-decision__prediction {
+  color: #28714b;
 }
 
-.dual-decision__policy {
-  margin-top: 11px;
+.dual-decision__explanation {
+  margin: 12px 0 0;
+  color: #60768e;
+  font-size: 0.9rem;
+  line-height: 1.65;
 }

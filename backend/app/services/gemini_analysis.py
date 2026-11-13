@@ -6,6 +6,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import re
 from typing import Any
 
 from dotenv import load_dotenv
@@ -24,6 +25,56 @@ CONFIDENCE_NOTE = (
 
 class GeminiAnalysisError(RuntimeError):
     """Raised when Gemini cannot provide a valid independent analysis."""
+
+
+class GeminiUnavailableError(RuntimeError):
+    """Raised when Gemini cannot classify an input and no final decision exists."""
+
+
+def describe_gemini_error(exception: Exception) -> dict[str, Any]:
+    """Return a useful diagnostic without leaking the configured API key."""
+    status_code = getattr(exception, "code", None)
+    if not isinstance(status_code, int):
+        response = getattr(exception, "response", None)
+        status_code = getattr(response, "status_code", None)
+    message = str(getattr(exception, "message", None) or exception)
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if api_key:
+        message = message.replace(api_key, "[REDACTED]")
+    message = re.sub(r"AIza[0-9A-Za-z_-]{20,}", "[REDACTED]", message)
+    message = " ".join(message.split())[:500]
+
+    lowered = message.lower()
+    if isinstance(exception, GeminiAnalysisError):
+        category = "invalid_response"
+    elif status_code in (400, 401):
+        category = (
+            "invalid_api_key"
+            if status_code == 401
+            or (
+                "api key" in lowered
+                and any(word in lowered for word in ("invalid", "not valid", "expired"))
+            )
+            else "invalid_request"
+        )
+    elif status_code == 403:
+        category = "permission_or_project_restriction"
+    elif status_code == 429:
+        category = "quota_or_rate_limit"
+    elif status_code == 404:
+        category = "model_not_found_or_unsupported"
+    elif status_code in (500, 502, 503, 504):
+        category = "temporary_server_error"
+    elif status_code is None:
+        category = "network_or_timeout"
+    else:
+        category = "api_error"
+    return {
+        "status_code": status_code,
+        "category": category,
+        "exception_type": type(exception).__name__,
+        "message": message,
+    }
 
 
 class GeminiAnalysisService:
@@ -52,7 +103,6 @@ class GeminiAnalysisService:
             ),
             config=types.GenerateContentConfig(
                 response_mime_type="application/json",
-                temperature=0.1,
             ),
         )
         try:
@@ -109,7 +159,6 @@ class GeminiAnalysisService:
                 f"Gemini prediction: {gemini_prediction}\n"
                 f"Decision: {json.dumps(decision, ensure_ascii=False)}"
             ),
-            config=types.GenerateContentConfig(temperature=0.2),
         )
         explanation = (response.text or "").strip()
         if not explanation:
@@ -125,13 +174,13 @@ def _is_string_list(value: object) -> bool:
 
 def load_gemini_service() -> GeminiAnalysisService | None:
     backend_dir = Path(__file__).resolve().parents[2]
-    load_dotenv(backend_dir / ".env")
+    load_dotenv(backend_dir / ".env", override=True)
     api_key = os.getenv("GEMINI_API_KEY", "").strip()
     if not api_key:
         logger.warning("Gemini analysis is disabled: GEMINI_API_KEY is not configured.")
         return None
 
-    model_name = os.getenv("GEMINI_MODEL", "").strip() or "gemini-2.5-flash"
+    model_name = os.getenv("GEMINI_MODEL", "").strip() or "gemini-3.8-flash"
     try:
         from google import genai
 
@@ -140,7 +189,12 @@ def load_gemini_service() -> GeminiAnalysisService | None:
         logger.warning("Gemini analysis is disabled: google-genai is unavailable.")
         return None
     except Exception as exc:
+        diagnostic = describe_gemini_error(exc)
         logger.warning(
-            "Gemini client initialization failed (%s).", type(exc).__name__
+            "Gemini client initialization failed: category=%s status=%s type=%s message=%s",
+            diagnostic["category"],
+            diagnostic["status_code"],
+            diagnostic["exception_type"],
+            diagnostic["message"],
         )
         return None

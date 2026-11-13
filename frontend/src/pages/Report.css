@@ -8,13 +8,14 @@
 }
 
 .report-page__content {
-  width: min(820px, calc(100% - 48px));
+  width: min(1040px, calc(100% - 48px));
   margin: 0 auto;
   padding: clamp(40px, 6vw, 66px) 0 64px;
 }
 
 .report-heading {
-  margin: 0 auto 28px;
+  max-width: 760px;
+  margin: 0 auto 34px;
   text-align: center;
 }
 
@@ -28,248 +29,217 @@
 }
 
 .report-heading p {
-  max-width: 650px;
   margin: 0 auto;
   color: #647a92;
   font-size: 0.96rem;
-  line-height: 1.65;
+  line-height: 1.7;
 }
 
-.report-form,
-.report-confirmation {
-  padding: clamp(22px, 5vw, 36px);
-  border: 1px solid #dce9f7;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 12px 30px rgba(27, 74, 124, 0.07);
-}
-
-.report-form__grid {
+.official-resources {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
 }
 
-.report-field {
+.resource-card {
   min-width: 0;
+  min-height: 250px;
+  padding: 23px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  border: 1px solid #dce9f7;
+  border-top: 3px solid #2e91dc;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.93);
+  box-shadow: 0 12px 30px rgba(27, 74, 124, 0.07);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.resource-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 34px rgba(27, 74, 124, 0.11);
+}
+
+.resource-card--women-support {
+  border-top-color: #377fb9;
+}
+
+.resource-card--emergency {
+  border-top-color: #cf6666;
+}
+
+.resource-card--police {
+  border-top-color: #3b78c4;
+}
+
+.resource-card__heading {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.resource-card__icon {
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #e8f4ff;
+  color: #1877c6;
+}
+
+.resource-card__icon--women-support {
+  background: #eaf3fb;
+  color: #3477ad;
+}
+
+.resource-card__icon--emergency {
+  background: #fff0ef;
+  color: #bd4d4d;
+}
+
+.resource-card__icon--police {
+  background: #eaf1fc;
+  color: #3a70b5;
+}
+
+.resource-card__icon svg {
+  width: 28px;
+  height: 28px;
+  stroke: currentColor;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.resource-card__heading h2 {
+  margin: 0;
   color: #193e6b;
-  font-size: 0.9rem;
+  font-size: 1.04rem;
+  font-weight: 720;
+  line-height: 1.4;
+}
+
+.resource-card__description {
+  margin: 17px 0 16px;
+  color: #687d94;
+  font-size: 0.88rem;
+  line-height: 1.7;
+}
+
+.resource-card__contacts {
+  width: 100%;
+  margin: 0 0 16px;
+  padding: 12px 14px;
+  display: grid;
+  gap: 6px;
+  border-radius: 10px;
+  background: #f5f9fe;
+  color: #536982;
+  font-size: 0.84rem;
+  line-height: 1.55;
+}
+
+.resource-card__contacts p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.resource-card__contacts span {
+  color: #637a93;
   font-weight: 650;
 }
 
-.report-field--full {
-  grid-column: 1 / -1;
+.resource-card__contacts a {
+  color: #176bc0;
+  font-weight: 650;
+  text-decoration: underline;
+  text-decoration-color: #a9c8e8;
+  text-underline-offset: 3px;
 }
 
-.report-field select,
-.report-field textarea {
-  width: 100%;
-  border: 1px solid #d8e5f2;
-  border-radius: 9px;
-  outline: none;
-  background: #fbfdff;
-  color: #17345b;
-  font: inherit;
-  font-size: 0.9rem;
-  font-weight: 400;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
+.resource-card__contacts a:hover {
+  color: #104f90;
 }
 
-.report-field select {
-  min-height: 44px;
-  padding: 0 12px;
-}
-
-.report-field textarea {
-  min-height: 92px;
-  padding: 11px 12px;
-  resize: vertical;
-  line-height: 1.6;
-}
-
-.report-field textarea::placeholder {
-  color: #91a1b3;
-}
-
-.report-field select:focus,
-.report-field textarea:focus {
-  border-color: #3b91d2;
-  box-shadow: 0 0 0 3px rgba(59, 145, 210, 0.12);
-}
-
-.report-form__error {
-  margin-top: 16px;
-  color: #ad4848;
-  font-size: 0.86rem;
-}
-
-.report-submit {
-  min-height: 44px;
-  margin-top: 24px;
-  padding: 0 17px;
+.resource-card__action {
+  min-height: 40px;
+  margin-top: auto;
+  padding: 0 14px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
-  border: 0;
+  gap: 12px;
   border-radius: 9px;
   background: #1e81d0;
   color: #fff;
-  font: inherit;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
   font-weight: 700;
-  cursor: pointer;
+  line-height: 1.35;
+  text-decoration: none;
   transition: transform 160ms ease, background 160ms ease;
 }
 
-.report-submit:hover {
+.resource-card--women-support .resource-card__action {
+  background: #346eae;
+}
+
+.resource-card--emergency .resource-card__action {
+  background: #b94d4d;
+}
+
+.resource-card__action:hover {
   transform: translateY(-1px);
   background: #126eb9;
 }
 
-.report-submit span {
-  font-size: 1.15rem;
-  line-height: 1;
+.resource-card--emergency .resource-card__action:hover {
+  background: #9e3f3f;
 }
 
-.report-confirmation {
-  text-align: center;
+.resource-card__action:focus-visible,
+.resource-card__contacts a:focus-visible {
+  outline: 3px solid rgba(30, 136, 229, 0.32);
+  outline-offset: 3px;
 }
 
-.report-confirmation__mark {
-  width: 46px;
-  height: 46px;
-  margin: 0 auto 14px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #e8f4ff;
-  color: #1877c6;
-  font-size: 1.35rem;
-  font-weight: 800;
+.resource-card__action span {
+  font-size: 1rem;
 }
 
-.report-confirmation h2 {
-  margin: 0 0 9px;
-  color: #123b75;
-  font-size: 1.35rem;
-  font-weight: 750;
-  line-height: 1.35;
-}
-
-.report-confirmation__message {
-  max-width: 620px;
-  margin: 0 auto;
-  color: #647a92;
-  font-size: 0.9rem;
-  line-height: 1.7;
-}
-
-.report-advice {
-  margin-top: 24px;
-  padding: 18px 20px;
-  border: 1px solid #e3edf7;
-  border-radius: 12px;
-  background: #f8fbff;
-  text-align: left;
-}
-
-.report-advice h3 {
-  margin: 0 0 10px;
-  color: #193e6b;
-  font-size: 0.96rem;
-}
-
-.report-advice ul {
-  margin: 0;
-  padding-left: 20px;
-}
-
-.report-advice li {
-  color: #60768e;
-  font-size: 0.86rem;
-  line-height: 1.65;
-}
-
-.report-advice li + li {
-  margin-top: 5px;
-}
-
-.official-help {
-  margin-top: 20px;
-  padding: 20px 22px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  border: 1px solid #dce9f7;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
-}
-
-.official-help__icon {
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-  display: grid;
-  place-items: center;
-  border-radius: 50%;
-  background: #e8f4ff;
-  color: #1877c6;
-  font-size: 0.85rem;
-  font-weight: 800;
-}
-
-.official-help h2 {
-  margin: 1px 0 6px;
-  color: #193e6b;
-  font-size: 0.98rem;
-  font-weight: 700;
-}
-
-.official-help p {
-  color: #647a92;
-  font-size: 0.84rem;
-  line-height: 1.65;
-}
-
-.official-help__resources {
-  margin-top: 10px;
-  padding-top: 9px;
-  border-top: 1px solid #e6eef7;
-  color: #3975ae;
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-@media (max-width: 600px) {
+@media (max-width: 700px) {
   .report-page__content {
-    width: calc(100% - 32px);
-    padding-top: 32px;
+    width: calc(100% - 36px);
+    padding-top: 36px;
     padding-bottom: 48px;
   }
 
   .report-heading {
-    margin-bottom: 22px;
+    margin-bottom: 26px;
   }
 
-  .report-form,
-  .report-confirmation {
-    padding: 22px 18px;
-  }
-
-  .report-form__grid {
+  .official-resources {
     grid-template-columns: 1fr;
-    gap: 17px;
+    gap: 15px;
   }
 
-  .report-field--full {
-    grid-column: auto;
+  .resource-card {
+    min-height: 0;
+    padding: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resource-card,
+  .resource-card__action {
+    transition: none;
   }
 
-  .official-help {
-    padding: 17px 16px;
+  .resource-card:hover,
+  .resource-card__action:hover {
+    transform: none;
   }
 }

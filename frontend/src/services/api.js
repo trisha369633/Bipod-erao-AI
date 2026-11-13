@@ -76,6 +76,18 @@ async function postDualAnalysis(path, payload) {
   }
 
   if (!response.ok) {
+    if (
+      response.status === 503 &&
+      data?.detail?.code === "GEMINI_UNAVAILABLE"
+    ) {
+      const error = new Error(
+        typeof data.detail.message === "string"
+          ? data.detail.message
+          : "GEMINI_UNAVAILABLE",
+      );
+      error.code = "GEMINI_UNAVAILABLE";
+      throw error;
+    }
     if (response.status === 404 || response.status >= 500) {
       throw new Error("ANALYSIS_SERVICE_UNAVAILABLE");
     }
@@ -87,9 +99,7 @@ async function postDualAnalysis(path, payload) {
 
   if (
     !data ||
-    !data.ml_analysis ||
-    !data.gemini_analysis ||
-    !data.final_decision ||
+    !["phishing", "legitimate"].includes(data.final_decision?.prediction) ||
     typeof data.decision_explanation !== "string"
   ) {
     throw new Error("ANALYSIS_RESPONSE_INVALID");
