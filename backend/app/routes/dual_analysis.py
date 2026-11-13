@@ -6,7 +6,6 @@ from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel, Field, field_validator
 
 from app.services.dual_decision import run_dual_analysis
-from app.services.gemini_analysis import GeminiUnavailableError
 from app.services.message_analysis import classify_message
 from app.services.url_classification import (
     URLInputError,
@@ -52,22 +51,13 @@ def dual_message_check(
             detail="Message analysis model is not available.",
         )
     ml_result = classify_message(payload.message, model)
-    try:
-        return run_dual_analysis(
-            "message",
-            payload.message,
-            ml_result,
-            getattr(request.app.state, "gemini_service", None),
-            payload.language,
-        )
-    except GeminiUnavailableError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "code": "GEMINI_UNAVAILABLE",
-                "message": "Analysis is temporarily unavailable. Please try again.",
-            },
-        ) from exc
+    return run_dual_analysis(
+        "message",
+        payload.message,
+        ml_result,
+        getattr(request.app.state, "gemini_service", None),
+        payload.language,
+    )
 
 
 @router.post("/url-check")
@@ -85,19 +75,10 @@ def dual_url_check(payload: URLAnalysisRequest, request: Request) -> dict[str, A
     except URLPredictionError as exc:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
-    try:
-        return run_dual_analysis(
-            "url",
-            payload.url,
-            ml_result,
-            getattr(request.app.state, "gemini_service", None),
-            payload.language,
-        )
-    except GeminiUnavailableError as exc:
-        raise HTTPException(
-            status_code=503,
-            detail={
-                "code": "GEMINI_UNAVAILABLE",
-                "message": "Analysis is temporarily unavailable. Please try again.",
-            },
-        ) from exc
+    return run_dual_analysis(
+        "url",
+        payload.url,
+        ml_result,
+        getattr(request.app.state, "gemini_service", None),
+        payload.language,
+    )

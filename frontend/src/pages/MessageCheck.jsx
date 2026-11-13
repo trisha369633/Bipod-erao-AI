@@ -79,9 +79,6 @@ export default function MessageCheck({ isBangla }) {
       <div className="analysis-page__content">
         <section className="analysis-panel" aria-labelledby="message-title">
           <div className="analysis-panel__heading">
-            <span className="analysis-panel__marker" aria-hidden="true">
-              01
-            </span>
             <h1 id="message-title">{text.title}</h1>
           </div>
 
@@ -99,7 +96,7 @@ export default function MessageCheck({ isBangla }) {
                 setAnalysis(null);
               }}
               placeholder={text.placeholder}
-              rows={7}
+              rows={4}
               maxLength={5000}
               disabled={isAnalyzing}
               aria-invalid={
@@ -127,7 +124,11 @@ export default function MessageCheck({ isBangla }) {
           </form>
 
           {analysis && (
-            <DualDecisionResult analysis={analysis} isBangla={isBangla} />
+            <DualDecisionResult
+              analysis={analysis}
+              isBangla={isBangla}
+              analysisType="message"
+            />
           )}
         </section>
       </div>

@@ -9,7 +9,7 @@ from app.services.dual_decision import (
 from app.services.gemini_analysis import (
     GeminiAnalysisService,
     GeminiAnalysisError,
-    GeminiUnavailableError,
+    GeminiCircuitOpenError,
     describe_gemini_error,
 )
 
@@ -33,8 +33,11 @@ class FakeGemini:
 
 
 class FailingGemini:
+    def __init__(self, error=None):
+        self.error = error or RuntimeError("synthetic API failure")
+
     def classify(self, analysis_type, original_input):
-        raise RuntimeError("synthetic API failure")
+        raise self.error
 
 
 class InvalidJsonGeminiClient:
@@ -43,6 +46,29 @@ class InvalidJsonGeminiClient:
             return SimpleNamespace(text="not JSON")
 
     models = Models()
+
+
+class FakeGeminiModels:
+    def __init__(self, error):
+        self.error = error
+        self.calls = 0
+
+    def generate_content(self, **kwargs):
+        self.calls += 1
+        if self.error is not None:
+            raise self.error
+        return SimpleNamespace(
+            text=(
+                '{"prediction":"legitimate","confidence":0.8,'
+                '"evidence":["no suspicious pattern"],"reasons":["test"]}'
+            )
+        )
+
+
+class FakeApiError(RuntimeError):
+    def __init__(self, status_code):
+        super().__init__(f"synthetic Google API status {status_code}")
+        self.code = status_code
 
 
 def message_ml_result(prediction, confidence):
@@ -94,25 +120,35 @@ class DualDecisionTests(unittest.TestCase):
         self.assertEqual(result["final_decision"]["prediction"], "phishing")
         self.assertIn("লিংক", result["decision_explanation"])
 
-    def test_gemini_failure_does_not_return_an_ml_only_decision(self):
-        with self.assertRaises(GeminiUnavailableError):
-            run_dual_analysis(
-                "message",
-                "synthetic input",
-                message_ml_result("promo", 0.75),
-                FailingGemini(),
-                language="en",
-            )
+    def test_gemini_failure_uses_ml_only_decision(self):
+        for error in (
+            FakeApiError(429),
+            FakeApiError(503),
+            TimeoutError("synthetic timeout"),
+        ):
+            with self.subTest(error=type(error).__name__):
+                result = run_dual_analysis(
+                    "message",
+                    "synthetic input",
+                    message_ml_result("smish", 0.75),
+                    FailingGemini(error),
+                    language="en",
+                )
+                self.assertEqual(
+                    result["final_decision"]["prediction"], "phishing"
+                )
+                self.assertNotIn("Gemini", str(result))
 
-    def test_missing_gemini_client_does_not_return_an_ml_only_decision(self):
-        with self.assertRaises(GeminiUnavailableError):
-            run_dual_analysis(
-                "message",
-                "synthetic input",
-                message_ml_result("promo", 0.75),
-                None,
-                language="en",
-            )
+    def test_missing_gemini_client_falls_back_to_ml(self):
+        result = run_dual_analysis(
+            "message",
+            "synthetic input",
+            message_ml_result("promo", 0.75),
+            None,
+            language="en",
+        )
+        self.assertEqual(result["final_decision"]["prediction"], "legitimate")
+        self.assertIn("No phishing", result["decision_explanation"])
 
     def test_quota_error_is_classified_and_api_key_is_redacted(self):
         api_key = "AIza123456789012345678901234567890"
@@ -124,6 +160,16 @@ class DualDecisionTests(unittest.TestCase):
         self.assertEqual(diagnostic["category"], "quota_or_rate_limit")
         self.assertNotIn(api_key, diagnostic["message"])
 
+    def test_temporary_server_and_timeout_errors_are_not_labeled_as_quota(self):
+        self.assertEqual(
+            describe_gemini_error(FakeApiError(503))["category"],
+            "temporary_server_error",
+        )
+        self.assertEqual(
+            describe_gemini_error(TimeoutError("synthetic timeout"))["category"],
+            "network_or_timeout",
+        )
+
     def test_invalid_gemini_response_is_not_mislabeled_as_network_failure(self):
         diagnostic = describe_gemini_error(GeminiAnalysisError("Invalid JSON."))
         self.assertEqual(diagnostic["category"], "invalid_response")
@@ -132,6 +178,31 @@ class DualDecisionTests(unittest.TestCase):
         service = GeminiAnalysisService(InvalidJsonGeminiClient(), "test-model")
         with self.assertRaises(GeminiAnalysisError):
             service.classify("message", "synthetic input")
+
+    def test_circuit_breaker_cools_down_then_allows_a_recovery_probe(self):
+        clock = [100.0]
+        models = FakeGeminiModels(FakeApiError(429))
+        service = GeminiAnalysisService(SimpleNamespace(models=models), "test-model")
+
+        with patch(
+            "app.services.gemini_analysis.time.monotonic",
+            side_effect=lambda: clock[0],
+        ):
+            for _ in range(3):
+                with self.assertRaises(FakeApiError):
+                    service.classify("url", "https://example.test")
+
+            self.assertEqual(models.calls, 3)
+            with self.assertRaises(GeminiCircuitOpenError):
+                service.classify("url", "https://example.test")
+            self.assertEqual(models.calls, 3)
+
+            clock[0] += 31
+            models.error = None
+            result = service.classify("url", "https://example.test")
+
+        self.assertEqual(models.calls, 4)
+        self.assertEqual(result["prediction"], "legitimate")
 
 
 if __name__ == "__main__":

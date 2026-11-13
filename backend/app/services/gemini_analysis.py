@@ -7,6 +7,8 @@ import logging
 import os
 from pathlib import Path
 import re
+import threading
+import time
 from typing import Any
 
 from dotenv import load_dotenv
@@ -21,14 +23,17 @@ CONFIDENCE_NOTE = (
     "Gemini's confidence is self-reported and uncalibrated; it is not used as "
     "a reliability score or a guaranteed probability."
 )
+GEMINI_TIMEOUT_MS = 10_000
+GEMINI_FAILURE_THRESHOLD = 3
+GEMINI_COOLDOWN_SECONDS = 30
 
 
 class GeminiAnalysisError(RuntimeError):
     """Raised when Gemini cannot provide a valid independent analysis."""
 
 
-class GeminiUnavailableError(RuntimeError):
-    """Raised when Gemini cannot classify an input and no final decision exists."""
+class GeminiCircuitOpenError(RuntimeError):
+    """Raised while Gemini is cooling down after repeated failures."""
 
 
 def describe_gemini_error(exception: Exception) -> dict[str, Any]:
@@ -45,7 +50,9 @@ def describe_gemini_error(exception: Exception) -> dict[str, Any]:
     message = " ".join(message.split())[:500]
 
     lowered = message.lower()
-    if isinstance(exception, GeminiAnalysisError):
+    if isinstance(exception, GeminiCircuitOpenError):
+        category = "circuit_open"
+    elif isinstance(exception, GeminiAnalysisError):
         category = "invalid_response"
     elif status_code in (400, 401):
         category = (
@@ -81,8 +88,46 @@ class GeminiAnalysisService:
     def __init__(self, client: Any, model_name: str) -> None:
         self._client = client
         self._model_name = model_name
+        self._consecutive_failures = 0
+        self._circuit_open_until: float | None = None
+        self._half_open_in_flight = False
+        self._circuit_lock = threading.Lock()
 
     def classify(self, analysis_type: str, original_input: str) -> dict[str, Any]:
+        is_probe = self._begin_classification()
+        try:
+            result = self._classify(analysis_type, original_input)
+        except Exception:
+            self._record_failure(is_probe)
+            raise
+        self._record_success()
+        return result
+
+    def _begin_classification(self) -> bool:
+        with self._circuit_lock:
+            if self._circuit_open_until is None:
+                return False
+            if time.monotonic() < self._circuit_open_until:
+                raise GeminiCircuitOpenError("Gemini is cooling down after repeated failures.")
+            if self._half_open_in_flight:
+                raise GeminiCircuitOpenError("Gemini recovery probe is already in progress.")
+            self._half_open_in_flight = True
+            return True
+
+    def _record_failure(self, is_probe: bool) -> None:
+        with self._circuit_lock:
+            self._consecutive_failures += 1
+            if is_probe or self._consecutive_failures >= GEMINI_FAILURE_THRESHOLD:
+                self._circuit_open_until = time.monotonic() + GEMINI_COOLDOWN_SECONDS
+            self._half_open_in_flight = False
+
+    def _record_success(self) -> None:
+        with self._circuit_lock:
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+            self._half_open_in_flight = False
+
+    def _classify(self, analysis_type: str, original_input: str) -> dict[str, Any]:
         from google.genai import types
 
         if analysis_type not in LABELS:
@@ -183,8 +228,16 @@ def load_gemini_service() -> GeminiAnalysisService | None:
     model_name = os.getenv("GEMINI_MODEL", "").strip() or "gemini-3.8-flash"
     try:
         from google import genai
+        from google.genai import types
 
-        return GeminiAnalysisService(genai.Client(api_key=api_key), model_name)
+        client = genai.Client(
+            api_key=api_key,
+            http_options=types.HttpOptions(
+                timeout=GEMINI_TIMEOUT_MS,
+                retry_options=types.HttpRetryOptions(attempts=1),
+            ),
+        )
+        return GeminiAnalysisService(client, model_name)
     except ImportError:
         logger.warning("Gemini analysis is disabled: google-genai is unavailable.")
         return None

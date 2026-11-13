@@ -1,44 +1,32 @@
 .dual-decision {
   margin-top: 20px;
-  padding: clamp(22px, 5vw, 32px);
-  border: 2px solid #85b8df;
-  border-radius: 14px;
-  background: #f0f7fd;
-  box-shadow: 0 10px 26px rgba(27, 74, 124, 0.08);
-  color: #536982;
+  padding: 0;
+  display: grid;
+  justify-items: center;
+  gap: 6px;
   text-align: center;
 }
 
-.dual-decision--phishing {
-  border-color: #d78a8a;
-  background: #fff5f4;
-}
-
-.dual-decision--legitimate {
-  border-color: #72b58c;
-  background: #f1faf4;
-}
-
-.dual-decision h2 {
-  margin: 0 0 10px;
-  color: #123b75;
-  font-size: 1.05rem;
-}
-
-.dual-decision__prediction {
+.dual-decision__label {
   margin: 0;
-  color: #a93636;
-  font-size: clamp(1.6rem, 5vw, 2rem);
-  font-weight: 800;
+  font-size: clamp(1.35rem, 3vw, 1.65rem);
+  font-weight: 650;
+  line-height: 1.25;
 }
 
-.dual-decision--legitimate .dual-decision__prediction {
-  color: #28714b;
+.dual-decision--false .dual-decision__label {
+  color: #b52e35;
+}
+
+.dual-decision--true .dual-decision__label {
+  color: #176fbb;
 }
 
 .dual-decision__explanation {
-  margin: 12px 0 0;
-  color: #60768e;
-  font-size: 0.9rem;
+  max-width: 580px;
+  margin: 0;
+  color: #4d627b;
+  font-size: 0.94rem;
   line-height: 1.65;
+  text-wrap: pretty;
 }

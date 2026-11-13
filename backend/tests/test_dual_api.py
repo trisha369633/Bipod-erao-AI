@@ -64,28 +64,43 @@ class DualAnalysisAPITests(unittest.TestCase):
         )
         self.assertIsInstance(body["decision_explanation"], str)
 
-    def test_missing_gemini_service_returns_friendly_retryable_503(self):
-        with patch("app.main.load_gemini_service", return_value=None):
+    def test_missing_gemini_service_returns_message_ml_fallback(self):
+        with (
+            patch("app.main.load_gemini_service", return_value=None),
+            patch(
+                "app.routes.dual_analysis.classify_message",
+                return_value={"predicted_label": "promo"},
+            ),
+        ):
             with TestClient(app) as client:
                 response = client.post(
                     "/api/dual/message-check",
                     json={"message": "synthetic message"},
                 )
-        self.assertEqual(response.status_code, 503)
-        detail = response.json()["detail"]
-        self.assertEqual(detail["code"], "GEMINI_UNAVAILABLE")
-        self.assertIn("try again", detail["message"].lower())
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(
+            body["final_decision"]["prediction"],
+            "legitimate",
+        )
+        self.assertEqual(set(body), {"final_decision", "decision_explanation"})
 
-    def test_gemini_failure_returns_no_prediction_or_technical_detail(self):
-        with patch("app.main.load_gemini_service", return_value=FailingGemini()):
+    def test_gemini_failure_returns_url_ml_fallback_without_technical_detail(self):
+        with (
+            patch("app.main.load_gemini_service", return_value=FailingGemini()),
+            patch(
+                "app.routes.dual_analysis.classify_url",
+                return_value={"prediction": "phishing"},
+            ),
+        ):
             with TestClient(app) as client:
                 response = client.post(
                     "/api/dual/url-check",
                     json={"url": "https://example.com"},
                 )
-        self.assertEqual(response.status_code, 503)
+        self.assertEqual(response.status_code, 200)
         body = response.json()
-        self.assertEqual(body["detail"]["code"], "GEMINI_UNAVAILABLE")
+        self.assertEqual(body["final_decision"]["prediction"], "phishing")
         self.assertNotIn("synthetic API failure", str(body))
 
     def test_invalid_dual_url_is_rejected(self):

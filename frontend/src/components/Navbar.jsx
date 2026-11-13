@@ -2,12 +2,16 @@ import "./Navbar.css";
 
 const labels = {
   en: {
+    brand: "Bipod Erao AI",
+    brandHome: "Bipod Erao AI home",
     home: "Home",
     message: "Message Check",
     link: "Link Check",
     report: "Report",
   },
   bn: {
+    brand: "বিপদ এড়াও AI",
+    brandHome: "বিপদ এড়াও AI হোম",
     home: "হোম",
     message: "মেসেজ চেক",
     link: "লিংক চেক",
@@ -30,7 +34,7 @@ export default function Navbar({
           className="brand"
           href="/"
           onClick={(event) => onNavigate(event, "/")}
-          aria-label="Bipod Erao AI home"
+          aria-label={text.brandHome}
         >
           <span className="brand__mark" aria-hidden="true">
             <svg viewBox="0 0 32 32" fill="none">
@@ -42,7 +46,7 @@ export default function Navbar({
               <circle cx="16" cy="16" r="4" fill="currentColor" />
             </svg>
           </span>
-          <span>Bipod Erao AI</span>
+          <span>{text.brand}</span>
         </a>
 
         <nav

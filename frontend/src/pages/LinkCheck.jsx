@@ -78,9 +78,6 @@ export default function LinkCheck({ isBangla }) {
       <div className="analysis-page__content">
         <section className="analysis-panel" aria-labelledby="link-title">
           <div className="analysis-panel__heading">
-            <span className="analysis-panel__marker" aria-hidden="true">
-              02
-            </span>
             <h1 id="link-title">{text.title}</h1>
           </div>
 
@@ -127,7 +124,11 @@ export default function LinkCheck({ isBangla }) {
           </form>
 
           {analysis && (
-            <DualDecisionResult analysis={analysis} isBangla={isBangla} />
+            <DualDecisionResult
+              analysis={analysis}
+              isBangla={isBangla}
+              analysisType="url"
+            />
           )}
         </section>
       </div>

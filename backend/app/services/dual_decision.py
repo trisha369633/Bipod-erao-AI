@@ -7,7 +7,6 @@ from typing import Any
 
 from app.services.gemini_analysis import (
     GeminiAnalysisService,
-    GeminiUnavailableError,
     describe_gemini_error,
 )
 
@@ -82,37 +81,41 @@ def run_dual_analysis(
         if analysis_type == "message"
         else ml_result["prediction"]
     )
-
+    ml_binary = binary_prediction(analysis_type, ml_prediction)
     if gemini_service is None:
-        logger.error(
-            "Gemini %s classification is unavailable: client is not configured.",
+        logger.warning(
+            "Gemini %s classification is unavailable; using ML result: "
+            "category=client_not_configured",
             analysis_type,
         )
-        raise GeminiUnavailableError("Gemini client is not configured.")
-    try:
-        gemini_result = gemini_service.classify(analysis_type, original_input)
-    except Exception as exc:
-        diagnostic = describe_gemini_error(exc)
-        logger.error(
-            "Gemini %s classification failed: category=%s status=%s type=%s message=%s",
-            analysis_type,
-            diagnostic["category"],
-            diagnostic["status_code"],
-            diagnostic["exception_type"],
-            diagnostic["message"],
-        )
-        raise GeminiUnavailableError("Gemini classification failed.") from exc
+        final_prediction = ml_binary
+    else:
+        try:
+            gemini_result = gemini_service.classify(analysis_type, original_input)
+            decision = build_final_decision(
+                analysis_type,
+                ml_prediction,
+                gemini_result["prediction"],
+            )
+            final_prediction = decision["prediction"]
+        except Exception as exc:
+            diagnostic = describe_gemini_error(exc)
+            logger.warning(
+                "Gemini %s classification failed; using ML result: "
+                "category=%s status=%s type=%s message=%s",
+                analysis_type,
+                diagnostic["category"],
+                diagnostic["status_code"],
+                diagnostic["exception_type"],
+                diagnostic["message"],
+            )
+            final_prediction = ml_binary
 
-    decision = build_final_decision(
-        analysis_type,
-        ml_prediction,
-        gemini_result["prediction"],
-    )
     explanation = _fallback_explanation(
-        language, analysis_type, decision["prediction"]
+        language, analysis_type, final_prediction
     )
 
     return {
-        "final_decision": {"prediction": decision["prediction"]},
+        "final_decision": {"prediction": final_prediction},
         "decision_explanation": explanation,
     }

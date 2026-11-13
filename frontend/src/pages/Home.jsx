@@ -7,14 +7,34 @@ const copy = {
       "Your free digital safety guide to detect suspicious messages and links.",
     intro:
       "Check suspicious SMS, identify possible phishing attempts, and understand the risks before you click or respond.",
-    messageTitle: "Message Check",
-    messageDescription:
-      "Check suspicious SMS or messages to understand whether they may contain phishing attempts or scams.",
-    messageButton: "Check Message",
-    linkTitle: "Link Check",
-    linkDescription:
-      "Check suspicious URLs to understand whether they may lead to phishing websites or online scams.",
-    linkButton: "Check Link",
+    messageCta: "Check a Message",
+    linkCta: "Check a Link",
+    featuresLabel: "What you can do",
+    features: [
+      {
+        title: "Smishing & SMS Detection",
+        description:
+          "Check suspicious SMS and messages for signs of smishing.",
+        action: "Check a message",
+        href: "/message-check",
+        icon: "message",
+      },
+      {
+        title: "Phishing URL Scanner",
+        description: "Scan URLs for patterns associated with phishing.",
+        action: "Check a link",
+        href: "/link-check",
+        icon: "link",
+      },
+      {
+        title: "Official Incident Reporting & Help",
+        description:
+          "Find official Bangladesh resources for incident reporting and cybercrime support.",
+        action: "Find official help",
+        href: "/report",
+        icon: "help",
+      },
+    ],
   },
   bn: {
     welcome: "বিপদ এড়াও AI-তে স্বাগতম",
@@ -22,52 +42,64 @@ const copy = {
       "সন্দেহজনক মেসেজ ও লিংক শনাক্ত করার আপনার বিনামূল্যের ডিজিটাল নিরাপত্তা সহায়ক।",
     intro:
       "সন্দেহজনক SMS পরীক্ষা করুন, সম্ভাব্য ফিশিং শনাক্ত করুন এবং ক্লিক বা উত্তর দেওয়ার আগে ঝুঁকিগুলো বুঝে নিন।",
-    messageTitle: "মেসেজ চেক",
-    messageDescription:
-      "সন্দেহজনক SMS বা মেসেজ পরীক্ষা করুন এবং ফিশিং বা প্রতারণার সম্ভাবনা বুঝুন।",
-    messageButton: "মেসেজ পরীক্ষা করুন",
-    linkTitle: "লিংক চেক",
-    linkDescription:
-      "সন্দেহজনক লিংক পরীক্ষা করুন এবং ফিশিং ওয়েবসাইট বা অনলাইন প্রতারণার ঝুঁকি বুঝুন।",
-    linkButton: "লিংক পরীক্ষা করুন",
+    messageCta: "মেসেজ পরীক্ষা করুন",
+    linkCta: "লিংক পরীক্ষা করুন",
+    featuresLabel: "আপনি যা করতে পারবেন",
+    features: [
+      {
+        title: "স্মিশিং ও SMS শনাক্তকরণ",
+        description: "সন্দেহজনক SMS ও মেসেজে স্মিশিংয়ের লক্ষণ পরীক্ষা করুন।",
+        action: "মেসেজ পরীক্ষা করুন",
+        href: "/message-check",
+        icon: "message",
+      },
+      {
+        title: "ফিশিং URL স্ক্যানার",
+        description: "ফিশিংয়ের সঙ্গে সম্পর্কিত লক্ষণের জন্য URL পরীক্ষা করুন।",
+        action: "লিংক পরীক্ষা করুন",
+        href: "/link-check",
+        icon: "link",
+      },
+      {
+        title: "অফিশিয়াল ঘটনা রিপোর্ট ও সহায়তা",
+        description:
+          "ঘটনা রিপোর্ট ও সাইবার অপরাধে সহায়তার জন্য বাংলাদেশের সরকারি সংস্থাগুলোর তথ্য দেখুন।",
+        action: "অফিশিয়াল সহায়তা দেখুন",
+        href: "/report",
+        icon: "help",
+      },
+    ],
   },
 };
 
-function MessageIcon() {
-  return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-      <path
-        d="M9 10.5h30v22H22l-9 6v-6H9v-22Z"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M16 19h16M16 25h11"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-    </svg>
-  );
-}
+function FeatureIcon({ name }) {
+  const paths = {
+    message: (
+      <>
+        <path d="M7 9h26v19H18l-8 6v-6H7V9Z" />
+        <path d="M13 16h14M13 21h10" />
+      </>
+    ),
+    link: (
+      <>
+        <path d="m18 22-3 3a7 7 0 0 1-10-10l6-6a7 7 0 0 1 10 0" />
+        <path d="m22 18 3-3a7 7 0 0 1 10 10l-6 6a7 7 0 0 1-10 0M14 24l10-10" />
+      </>
+    ),
+    help: (
+      <>
+        <path d="M20 5 34 10v10c0 10-6 17-14 21C12 37 6 30 6 20V10l14-5Z" />
+        <path d="m14 22 4 4 8-9" />
+      </>
+    ),
+  };
 
-function LinkIcon() {
   return (
-    <svg viewBox="0 0 48 48" fill="none" aria-hidden="true">
-      <path
-        d="m19.5 28.5-3 3a7 7 0 0 1-9.9-9.9l7-7a7 7 0 0 1 9.9 0"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-      <path
-        d="m28.5 19.5 3-3a7 7 0 0 1 9.9 9.9l-7 7a7 7 0 0 1-9.9 0M18 30l12-12"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-      />
-    </svg>
+    <span className="feature-card__icon" aria-hidden="true">
+      <svg viewBox="0 0 40 40" fill="none">
+        {paths[name]}
+      </svg>
+    </span>
   );
 }
 
@@ -81,53 +113,44 @@ export default function Home({ isBangla, onNavigate }) {
           <h1 id="welcome-title">{text.welcome}</h1>
           <p className="welcome__tagline">{text.tagline}</p>
           <p className="welcome__intro">{text.intro}</p>
+          <div className="home-actions">
+            <a
+              className="home-actions__button home-actions__button--primary"
+              href="/message-check"
+              onClick={(event) => onNavigate(event, "/message-check")}
+            >
+              {text.messageCta}
+              <span aria-hidden="true">→</span>
+            </a>
+            <a
+              className="home-actions__button home-actions__button--secondary"
+              href="/link-check"
+              onClick={(event) => onNavigate(event, "/link-check")}
+            >
+              {text.linkCta}
+              <span aria-hidden="true">→</span>
+            </a>
+          </div>
         </section>
 
-        <section
-          className="check-options"
-          aria-label={isBangla ? "নিরাপত্তা যাচাই" : "Safety checks"}
-        >
-          <article className="check-card check-card--message" id="message-check">
-            <div className="check-card__icon">
-              <MessageIcon />
-            </div>
-            <div className="check-card__body">
-              <h2>{text.messageTitle}</h2>
-              <p>{text.messageDescription}</p>
-              <a
-                className="check-card__button"
-                href="/message-check"
-                onClick={(event) => onNavigate(event, "/message-check")}
-              >
-                {text.messageButton}
-                <span aria-hidden="true">→</span>
-              </a>
-            </div>
-            <span className="check-card__number" aria-hidden="true">
-              01
-            </span>
-          </article>
-
-          <article className="check-card check-card--link" id="link-check">
-            <div className="check-card__icon">
-              <LinkIcon />
-            </div>
-            <div className="check-card__body">
-              <h2>{text.linkTitle}</h2>
-              <p>{text.linkDescription}</p>
-              <a
-                className="check-card__button"
-                href="/link-check"
-                onClick={(event) => onNavigate(event, "/link-check")}
-              >
-                {text.linkButton}
-                <span aria-hidden="true">→</span>
-              </a>
-            </div>
-            <span className="check-card__number" aria-hidden="true">
-              02
-            </span>
-          </article>
+        <section className="feature-section" aria-label={text.featuresLabel}>
+          <div className="feature-grid">
+            {text.features.map((feature) => (
+              <article className="feature-card" key={feature.icon}>
+                <FeatureIcon name={feature.icon} />
+                <h2>{feature.title}</h2>
+                <p>{feature.description}</p>
+                <a
+                  className="feature-card__action"
+                  href={feature.href}
+                  onClick={(event) => onNavigate(event, feature.href)}
+                >
+                  {feature.action}
+                  <span aria-hidden="true">→</span>
+                </a>
+              </article>
+            ))}
+          </div>
         </section>
       </div>
     </main>

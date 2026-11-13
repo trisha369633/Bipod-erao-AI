@@ -1,17 +1,18 @@
 .analysis-panel__textarea {
   width: 100%;
-  min-height: 170px;
-  padding: 14px 2px 12px;
+  min-height: 116px;
+  padding: 8px 0 9px;
+  display: block;
   resize: vertical;
   border: 0;
-  border-bottom: 2px solid #3b91d2;
+  border-bottom: 1px solid #b8cfe6;
   border-radius: 0;
   outline: none;
   background: transparent;
   color: #17345b;
   font: inherit;
   font-size: 0.96rem;
-  line-height: 1.65;
+  line-height: 1.55;
   transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -21,7 +22,7 @@
 
 .analysis-panel__textarea:focus {
   border-color: #176fbb;
-  box-shadow: 0 2px 0 #176fbb;
+  box-shadow: 0 1px 0 #176fbb;
 }
 
 .analysis-panel__textarea:disabled {
