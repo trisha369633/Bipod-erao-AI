@@ -32,6 +32,23 @@ class FailingGemini:
 
 
 class DualAnalysisAPITests(unittest.TestCase):
+    def test_production_frontend_origin_is_allowed_by_cors(self):
+        with patch("app.main.load_gemini_service", return_value=FakeGemini()):
+            with TestClient(app) as client:
+                response = client.options(
+                    "/api/dual/url-check",
+                    headers={
+                        "Origin": "https://bipod-erao-ai.vercel.app",
+                        "Access-Control-Request-Method": "POST",
+                        "Access-Control-Request-Headers": "content-type",
+                    },
+                )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.headers["access-control-allow-origin"],
+            "https://bipod-erao-ai.vercel.app",
+        )
+
     def test_dual_message_endpoint_returns_final_decision(self):
         with patch("app.main.load_gemini_service", return_value=FakeGemini()):
             with TestClient(app) as client:
