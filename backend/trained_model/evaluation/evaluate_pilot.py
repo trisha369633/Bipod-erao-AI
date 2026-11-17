@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import json
 import os
@@ -36,7 +37,12 @@ def _message_id(text: str) -> str:
 
 
 def _file_sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    open_file = gzip.open if path.suffix == ".gz" else Path.open
+    with open_file(path, "rb") as stream:
+        while chunk := stream.read(1024 * 1024):
+            digest.update(chunk)
+    return digest.hexdigest()
 
 
 def _prepare_samples() -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any]]:
@@ -48,7 +54,7 @@ def _prepare_samples() -> tuple[dict[str, list[dict[str, Any]]], dict[str, Any]]
     message_validation_path = BACKEND / "dataset/processed/validation.csv"
     url_data_path = (
         BACKEND
-        / "dataset/url/prepared_mendeley/prepared_urls_with_domains.csv"
+        / "dataset/url/prepared_mendeley/prepared_urls_with_domains.csv.gz"
     )
     if _file_sha256(message_test_path) != manifest["message"]["test_file_sha256"]:
         raise ValueError("Message test data changed after pilot sample selection.")

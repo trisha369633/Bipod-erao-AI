@@ -119,7 +119,7 @@
     "validation_file_sha256": "3ccff82803094ae7ce6b3bd33d879371ed4f3f7eb6c1be299d3e1657ed78e304"
   },
   "url": {
-    "test_split": "reproduced from backend/dataset/url/prepared_mendeley/prepared_urls_with_domains.csv",
+    "test_split": "reproduced from backend/dataset/url/prepared_mendeley/prepared_urls_with_domains.csv.gz",
     "split_definition": {
       "method": "GroupShuffleSplit",
       "test_size": 0.2,

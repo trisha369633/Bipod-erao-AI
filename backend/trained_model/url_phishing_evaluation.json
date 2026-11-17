@@ -1,7 +1,7 @@
 {
   "trained_at": "2026-11-11T10:13:11+00:00",
-  "input_dataset": "dataset/url/prepared_mendeley/prepared_urls.csv",
-  "domain_dataset": "dataset/url/prepared_mendeley/prepared_urls_with_domains.csv",
+  "input_dataset": "dataset/url/prepared_mendeley/prepared_urls.csv.gz",
+  "domain_dataset": "dataset/url/prepared_mendeley/prepared_urls_with_domains.csv.gz",
   "registrable_domain_method": {
     "library": "tldextract",
     "version": "5.3.0",
