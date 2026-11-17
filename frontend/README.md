@@ -2,6 +2,13 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
 
+## API configuration
+
+The frontend uses `http://localhost:8000` during Vite development and
+`https://bipod-erao-ai.onrender.com` for production builds. Set
+`VITE_API_BASE_URL` to override the API origin in either environment. API
+requests append their `/api/...` paths to this base URL.
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
