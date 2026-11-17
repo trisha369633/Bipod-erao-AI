@@ -52,6 +52,30 @@ retained.
 - `prepare_dataset.py` — reproducible local preparation utility.
 - `compress_prepared_csvs.py` — streaming, lossless compressor; preserves source
   files unless run with `--replace-originals`.
+- `../../../split_and_reduce_dataset.py` — writes size-limited, pandas-readable
+  parts for the two prepared datasets without changing their source files.
+
+## Training-ready parts
+
+From the repository root, run:
+
+```sh
+python3 backend/split_and_reduce_dataset.py
+```
+
+The script reads either the uncompressed CSVs or their `.csv.gz` equivalents,
+in chunks, and writes `prepared_urls_part_NNN.csv` and
+`prepared_urls_with_domains_part_NNN.csv` beside the inputs. Each part is
+limited to 15,000,000 bytes by default, repeats the header, and can be loaded
+independently or concatenated with pandas. Every row is retained. By default,
+the parts keep only fields needed by the URL training workflow: `record_id`,
+`normalized_url`, `label`, `source`, and, for the enriched dataset,
+`registrable_domain`. Use `--keep-all-columns` to retain the remaining audit
+metadata. The source CSVs and compressed copies are never modified.
+
+The script refuses to overwrite existing parts unless `--overwrite` is given.
+For example, `python3 backend/split_and_reduce_dataset.py --overwrite` reruns
+the split after replacing the existing parts.
 
 ## Lossless compression
 
