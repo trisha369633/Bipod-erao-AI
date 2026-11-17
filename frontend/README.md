@@ -5,9 +5,12 @@ This template provides a minimal setup to get React working in Vite with HMR and
 ## API configuration
 
 The frontend uses `http://localhost:8000` during Vite development and
-`https://bipod-erao-ai.onrender.com` for production builds. Set
-`VITE_API_BASE_URL` to override the API origin in either environment. API
-requests append their `/api/...` paths to this base URL.
+`https://bipod-erao-ai.onrender.com` for production builds. Set `VITE_API_URL`
+to override the API origin in either environment. The previous
+`VITE_API_BASE_URL` setting remains supported as an alias. API requests append
+their `/api/...` paths to this base URL. Transient network errors and HTTP
+502/503/504 responses are retried while the analysis page remains in its
+loading state.
 
 Currently, two official plugins are available:
 

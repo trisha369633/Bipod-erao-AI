@@ -1,14 +1,38 @@
+const configuredApiUrl =
+  import.meta.env.VITE_API_URL?.trim() ||
+  import.meta.env.VITE_API_BASE_URL?.trim();
 const API_BASE_URL = (
-  import.meta.env.VITE_API_BASE_URL ??
+  configuredApiUrl ||
   (import.meta.env.DEV
     ? "http://localhost:8000"
     : "https://bipod-erao-ai.onrender.com")
 ).replace(/\/+$/, "");
+const RETRY_DELAYS = [1500, 3000, 6000, 10000];
+
+async function fetchApi(path, options) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      const response = await fetch(`${API_BASE_URL}${path}`, options);
+      if (
+        ![502, 503, 504].includes(response.status) ||
+        attempt === RETRY_DELAYS.length
+      ) {
+        return response;
+      }
+    } catch (error) {
+      if (!(error instanceof TypeError) || attempt === RETRY_DELAYS.length) {
+        throw error;
+      }
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, RETRY_DELAYS[attempt]));
+  }
+}
 
 async function postAnalysis(path, payload) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetchApi(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -57,7 +81,7 @@ async function postAnalysis(path, payload) {
 async function postDualAnalysis(path, payload) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}${path}`, {
+    response = await fetchApi(path, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -113,7 +137,7 @@ async function postDualAnalysis(path, payload) {
 export async function analyzeMessage(message) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/message-check`, {
+    response = await fetchApi("/api/message-check", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message }),
@@ -161,7 +185,7 @@ export function analyzeDualUrl(url, language) {
 export async function analyzeLink(url) {
   let response;
   try {
-    response = await fetch(`${API_BASE_URL}/api/url-check`, {
+    response = await fetchApi("/api/url-check", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ url }),
